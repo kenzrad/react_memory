@@ -7,17 +7,28 @@ import Score from "./components/Score";
 import images from "./images.json";
 
 class App extends Component {
-  // Setting this.state.friends to the friends json array
   state = {
     images,
     score: 0,
     topScore: 0
   };
 
-  handleImageClick = id => {
+  handleImageClick = (id, clicked) => {
     console.log(`${id} has been clicked!`)
     let newArray = this.shuffleArray(images);
-    this.setState({images: newArray});
+    if(clicked) {
+      this.setState({score: 0});
+    }
+    else if (this.state.topScore < 12) {
+      this.setState({
+        images: newArray,
+        score: this.state.score + 1,
+        topScore: this.state.score + 1 > this.state.topScore ? this.state.score + 1 : this.state.topScore
+      });
+    }
+    else {
+      console.log("You win!");
+    }
   };
 
   shuffleArray = array => {
@@ -30,7 +41,6 @@ class App extends Component {
     }
     return array;
   };
-
 
   // Map over this.state.friends and render a FriendCard component for each friend object
   render() {
@@ -50,7 +60,7 @@ class App extends Component {
             name={image.name}
             key={image.id}
             image={image.image}
-            clicked={image.clicked}
+            clickCheck={this.clickCheck}
           />
         ))}
       </Wrapper>
