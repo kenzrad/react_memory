@@ -13,23 +13,47 @@ class App extends Component {
     topScore: 0
   };
 
-  handleImageClick = (id, clicked) => {
-    console.log(`${id} has been clicked!`)
-    let newArray = this.shuffleArray(images);
-    if(clicked) {
-      this.setState({score: 0});
-    }
-    else if (this.state.topScore < 12) {
-      this.setState({
-        images: newArray,
-        score: this.state.score + 1,
-        topScore: this.state.score + 1 > this.state.topScore ? this.state.score + 1 : this.state.topScore
-      });
+  gameOver = () => {
+    if (this.state.score === 12) {
+      console.log("you win!!!");
     }
     else {
-      console.log("You win!");
+      console.log("you lose!");
     }
+    this.state.images.forEach(card => {
+      card.clicked = 0;
+    });
+    this.setState({ score: 0 });
   };
+
+  handleImageClick = (id) => {
+    let newArray = this.shuffleArray(images);
+    this.state.images.find((image, i) => {
+      if (image.id === id) {
+        if (images[i].clicked === 0 && this.state.score < 11) {
+          images[i].clicked = images[i].clicked + 1;
+          this.setState({ 
+            images: newArray,
+            score: this.state.score + 1, 
+            topScore: this.state.score + 1 > this.state.topScore ? this.state.score + 1 : this.state.topScore
+          });
+          return true;
+        }
+        else if (images[i].clicked === 0 && this.state.score === 11) {
+          this.setState({ 
+            score: this.state.score + 1, 
+            topScore: this.state.score + 1 > this.state.topScore ? this.state.score + 1 : this.state.topScore
+          }, function () {
+            this.gameOver();
+          }) 
+        } 
+        else {
+          this.gameOver();
+        }
+      }
+    })
+  };
+
 
   shuffleArray = array => {
     let i = array.length - 1;
